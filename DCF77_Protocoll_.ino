@@ -1,3 +1,6 @@
+
+//!!!!ONLY FOR TESTING PURPOSES!
+
 #define FILENAME "DCF77gen3"
 // Generator for 77,5 kHz (DCF-77) by Jonas woerner (c)
 #include <Time.h>
