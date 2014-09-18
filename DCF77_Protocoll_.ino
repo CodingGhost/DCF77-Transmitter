@@ -46,15 +46,18 @@ void setup()
   pinMode(pin2, OUTPUT);
   digitalWrite(pin2, LOW);
   digitalWrite(stdled,HIGH);
-TCCR2B = B00000001;            
+//TCCR2B = B00000001;            
   // Bits 2 1 0 = 0 0 1 : no prescaling, divide by 1 (other prescalers: 8, 32, 64, 128, 256, 1024)
-  TCCR2A = B01000010;  
+  //TCCR2A = B01000010;  
   // | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
   // | 0 | 1 | 0 | 0 | - | - | - | - | : Toggle OC2A on Compare Match
   // | - | - | - | - | 0 | 0 | 1 | 0 | : Clear Timer on Compare Match  
-  OCR2A  = 102;    // frequency = 16,000,000 / 2 / (OCR2A + 1) = 77.604 kHz
+  //OCR2A  = 102;    // frequency = 16,000,000 / 2 / (OCR2A + 1) = 77.604 kHz
   // each time when Timer2 gets 102 the selected output gets inverted
-    
+     setupFrequencyGen();
+  //206
+  setFrequency(206);        //-Make 77KHz
+    //analogWrite(11,255);
 }
 
 void loop()
@@ -249,3 +252,27 @@ void modulate(byte b)
    }
   
 }
+
+void setFrequency(int d)
+{
+  //Frequency = 16000000/d
+
+  if(d<0)
+    d=-d;
+  if(d<2)
+    d=2;
+  TCCR1B&=0xfe;             //-Stop generator
+  TCNT1=0;                  //-Clear timer
+  ICR1=d;                   // |
+  OCR1A=(d/2);              //-+
+  TCCR1B|=0x01;             //-Restart generator
+}
+
+void setupFrequencyGen()
+{
+  TCCR1A=0b10000010;        //-Set up frequency generator
+  TCCR1B=0b00011001;        //-+
+  setFrequency(16);         //-Start with 1MHz
+  pinMode(11,OUTPUT);        //-Signal generator pin
+}
+
